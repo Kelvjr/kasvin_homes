@@ -1,0 +1,36 @@
+{
+  "name": "@kasvin/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "build": "pnpm generate && tsc -p tsconfig.json",
+    "lint": "eslint src prisma7.config.ts",
+    "typecheck": "pnpm generate && tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@kasvin/config": "workspace:*",
+    "@types/node": "24.10.0",
+    "@types/pg": "8.23.1",
+    "eslint": "9.39.2",
+    "prisma": "7.10.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.73.0",
+    "vitest": "5.1.1"
+  }
+}

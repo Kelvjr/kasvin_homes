@@ -1,0 +1,11 @@
+{
+  "extends": "@kasvin/config/tsconfig/base",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": ".",
+    "outDir": "dist",
+    "declaration": true
+  },
+  "include": ["src", "generated"]
+}

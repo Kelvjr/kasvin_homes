@@ -1,0 +1,22 @@
+{
+  "name": "kasvin-homes",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24 <27"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build --concurrency=1",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.10.1",
+    "turbo": "2.11.12",
+    "typescript": "5.9.3"
+  }
+}

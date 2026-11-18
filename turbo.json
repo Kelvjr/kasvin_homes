@@ -1,0 +1,20 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "DATABASE_URL",
+        "CORS_ORIGINS",
+        "PORT",
+        "NODE_ENV",
+        "NEXT_PUBLIC_API_URL"
+      ]
+    },
+    "build": { "dependsOn": ["^build"], "outputs": [".next/**", "dist/**"] },
+    "lint": { "dependsOn": ["^lint"] },
+    "typecheck": { "dependsOn": ["^typecheck"] },
+    "test": { "dependsOn": ["^build"] }
+  }
+}
