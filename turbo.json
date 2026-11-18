@@ -14,7 +14,7 @@
     },
     "build": { "dependsOn": ["^build"], "outputs": [".next/**", "dist/**"] },
     "lint": { "dependsOn": ["^lint"] },
-    "typecheck": { "dependsOn": ["^typecheck"] },
+    "typecheck": { "dependsOn": ["^build"] },
     "test": { "dependsOn": ["^build"] }
   }
 }
