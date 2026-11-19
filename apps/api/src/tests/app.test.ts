@@ -31,6 +31,7 @@ describe('system routes', () => {
       '/api/v1/unknown',
     );
     expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'not_found', message: 'Not found' });
   });
 
   it('handles unexpected errors without leaking details', async () => {

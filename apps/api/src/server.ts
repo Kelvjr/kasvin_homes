@@ -2,14 +2,18 @@ import 'dotenv/config';
 import {
   checkDatabaseConnection,
   closeDatabaseConnection,
+  getDatabaseClient,
 } from '@kasvin/database';
 import { createApp } from './app.js';
 import { parseConfig } from './config/env.js';
 import { logger } from './lib/logger.js';
+import { ApartmentService } from './modules/apartments/apartment.service.js';
 
 const config = parseConfig(process.env);
-const app = createApp(config, () =>
-  checkDatabaseConnection(config.DATABASE_URL),
+const app = createApp(
+  config,
+  () => checkDatabaseConnection(config.DATABASE_URL),
+  new ApartmentService(getDatabaseClient(config.DATABASE_URL)),
 );
 const server = app.listen(config.PORT, () => {
   logger.info({ port: config.PORT }, 'Kasvin API listening');

@@ -32,6 +32,7 @@ const envSchema = z.object({
         }),
       'Must be a comma-separated list of origins',
     ),
+  DEV_ADMIN_TOKEN: z.string().min(32).optional(),
 });
 
 export type AppConfig = z.infer<typeof envSchema>;

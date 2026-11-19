@@ -1,5 +1,13 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/client/client.js';
+export { ApartmentStatus, Prisma } from '../generated/client/client.js';
+export type {
+  PrismaClient,
+  Apartment,
+  Amenity,
+  ApartmentImage,
+  ApartmentAmenity,
+} from '../generated/client/client.js';
 
 let client: PrismaClient | undefined;
 

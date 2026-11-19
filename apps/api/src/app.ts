@@ -8,10 +8,13 @@ import type { AppConfig } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFound } from './middleware/error.js';
 import { systemRoutes } from './routes/system.js';
+import { apartmentRoutes } from './modules/apartments/apartment.routes.js';
+import type { ApartmentService } from './modules/apartments/apartment.service.js';
 
 export function createApp(
   config: AppConfig,
   checkDatabase: () => Promise<void>,
+  apartmentService?: ApartmentService,
 ): Express {
   const app = express();
   app.disable('x-powered-by');
@@ -36,6 +39,8 @@ export function createApp(
   );
 
   app.use(`/api/${API_VERSION}`, systemRoutes(checkDatabase));
+  if (apartmentService)
+    app.use(`/api/${API_VERSION}`, apartmentRoutes(config, apartmentService));
   app.use(notFound);
   app.use(errorHandler);
   return app;

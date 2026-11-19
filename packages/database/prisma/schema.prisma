@@ -7,4 +7,72 @@ datasource db {
   provider = "postgresql"
 }
 
-// Domain models begin in M1. M0 deliberately has no tables.
+enum ApartmentStatus {
+  DRAFT
+  PUBLISHED
+  UNAVAILABLE
+  ARCHIVED
+}
+
+model Apartment {
+  id                   String             @id @default(uuid()) @db.Uuid
+  code                 String             @unique @db.VarChar(32)
+  name                 String             @db.VarChar(160)
+  slug                 String             @unique @db.VarChar(180)
+  shortDescription     String?            @db.VarChar(500)
+  description          String?
+  bedrooms             Int
+  bathrooms            Int?
+  maximumGuests        Int?
+  locationDescription  String?            @db.VarChar(160)
+  unitPosition         String?            @db.VarChar(160)
+  baseNightlyRateMinor Int?
+  currency             String             @default("GHS") @db.VarChar(3)
+  status               ApartmentStatus    @default(DRAFT)
+  publishedAt          DateTime?
+  archivedAt           DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  amenities            ApartmentAmenity[]
+  images               ApartmentImage[]
+
+  @@index([status, createdAt, id])
+  @@index([bedrooms, maximumGuests])
+}
+
+model Amenity {
+  id          String             @id @default(uuid()) @db.Uuid
+  name        String             @unique @db.VarChar(120)
+  slug        String             @unique @db.VarChar(140)
+  category    String?            @db.VarChar(100)
+  description String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  apartments  ApartmentAmenity[]
+}
+
+model ApartmentAmenity {
+  apartmentId String    @db.Uuid
+  amenityId   String    @db.Uuid
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  amenity     Amenity   @relation(fields: [amenityId], references: [id], onDelete: Restrict)
+
+  @@id([apartmentId, amenityId])
+  @@index([amenityId])
+}
+
+model ApartmentImage {
+  id          String    @id @default(uuid()) @db.Uuid
+  apartmentId String    @db.Uuid
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  url         String    @db.VarChar(2048)
+  publicId    String?   @unique @db.VarChar(255)
+  altText     String?   @db.VarChar(300)
+  sortOrder   Int       @default(0)
+  isCover     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([apartmentId, url])
+  @@index([apartmentId, sortOrder, id])
+}
