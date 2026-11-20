@@ -182,7 +182,7 @@ export function availabilityRoutes(
       await service.setDiscount(
         param(req.params.id),
         read(z.coerce.number().int().min(1).max(366), req.params.minNights),
-        read(z.object({ discountBps: integer.min(1).max(9999) }), req.body)
+        read(z.object({ discountBps: integer.min(1).max(3000) }), req.body)
           .discountBps,
       ),
     ),

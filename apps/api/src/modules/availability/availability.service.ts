@@ -428,6 +428,12 @@ export class AvailabilityService {
     return { removed: true };
   }
   async setDiscount(id: string, minNights: number, discountBps: number) {
+    if (!Number.isInteger(discountBps) || discountBps < 1 || discountBps > 3000)
+      throw new ApiError(
+        400,
+        'invalid_discount',
+        'Discount must be between 0.01% and 30%',
+      );
     await this.apartment(id);
     return this.db.lengthOfStayDiscount.upsert({
       where: { apartmentId_minNights: { apartmentId: id, minNights } },

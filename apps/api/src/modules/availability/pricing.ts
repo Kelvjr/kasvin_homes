@@ -46,7 +46,7 @@ export function priceStay(input: PricingInput) {
     .filter((discount) => discount.minNights <= input.nights)
     .sort((a, b) => b.minNights - a.minNights)[0];
   const bps = applicable?.discountBps ?? 0;
-  if (!Number.isInteger(bps) || bps < 0 || bps >= 10000)
+  if (!Number.isInteger(bps) || bps < 0 || bps > 3000)
     throw new ApiError(
       500,
       'invalid_pricing',

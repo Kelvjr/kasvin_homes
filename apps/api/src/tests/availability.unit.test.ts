@@ -61,6 +61,16 @@ describe('date and pricing rules', () => {
       priceStay({
         start: parseDate('2026-12-01'),
         nights: 1,
+        baseRate: 100,
+        overrides: [],
+        weekdays: [],
+        discounts: [{ minNights: 1, discountBps: 3001 }],
+      }),
+    ).toThrow();
+    expect(() =>
+      priceStay({
+        start: parseDate('2026-12-01'),
+        nights: 1,
         baseRate: null,
         overrides: [],
         weekdays: [],
