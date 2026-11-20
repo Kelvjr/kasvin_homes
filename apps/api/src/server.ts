@@ -8,12 +8,16 @@ import { createApp } from './app.js';
 import { parseConfig } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { ApartmentService } from './modules/apartments/apartment.service.js';
+import { AvailabilityService } from './modules/availability/availability.service.js';
+import { CalendarSyncService } from './modules/availability/calendar.sync.js';
 
 const config = parseConfig(process.env);
 const app = createApp(
   config,
   () => checkDatabaseConnection(config.DATABASE_URL),
   new ApartmentService(getDatabaseClient(config.DATABASE_URL)),
+  new AvailabilityService(getDatabaseClient(config.DATABASE_URL)),
+  new CalendarSyncService(getDatabaseClient(config.DATABASE_URL)),
 );
 const server = app.listen(config.PORT, () => {
   logger.info({ port: config.PORT }, 'Kasvin API listening');

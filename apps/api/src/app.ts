@@ -10,11 +10,16 @@ import { errorHandler, notFound } from './middleware/error.js';
 import { systemRoutes } from './routes/system.js';
 import { apartmentRoutes } from './modules/apartments/apartment.routes.js';
 import type { ApartmentService } from './modules/apartments/apartment.service.js';
+import type { AvailabilityService } from './modules/availability/availability.service.js';
+import type { CalendarSyncService } from './modules/availability/calendar.sync.js';
+import { availabilityRoutes } from './modules/availability/availability.routes.js';
 
 export function createApp(
   config: AppConfig,
   checkDatabase: () => Promise<void>,
   apartmentService?: ApartmentService,
+  availabilityService?: AvailabilityService,
+  calendarSyncService?: CalendarSyncService,
 ): Express {
   const app = express();
   app.disable('x-powered-by');
@@ -24,7 +29,10 @@ export function createApp(
     pinoHttp({
       logger,
       autoLogging: {
-        ignore: (req) => req.url === `/api/${API_VERSION}/health`,
+        ignore: (req) =>
+          req.url === `/api/${API_VERSION}/health` ||
+          (req.url?.startsWith(`/api/${API_VERSION}/calendars/export/`) ??
+            false),
       },
     }),
   );
@@ -41,6 +49,11 @@ export function createApp(
   app.use(`/api/${API_VERSION}`, systemRoutes(checkDatabase));
   if (apartmentService)
     app.use(`/api/${API_VERSION}`, apartmentRoutes(config, apartmentService));
+  if (availabilityService && calendarSyncService)
+    app.use(
+      `/api/${API_VERSION}`,
+      availabilityRoutes(config, availabilityService, calendarSyncService),
+    );
   app.use(notFound);
   app.use(errorHandler);
   return app;

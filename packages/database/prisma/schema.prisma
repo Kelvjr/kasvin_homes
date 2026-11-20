@@ -15,29 +15,158 @@ enum ApartmentStatus {
 }
 
 model Apartment {
-  id                   String             @id @default(uuid()) @db.Uuid
-  code                 String             @unique @db.VarChar(32)
-  name                 String             @db.VarChar(160)
-  slug                 String             @unique @db.VarChar(180)
-  shortDescription     String?            @db.VarChar(500)
+  id                   String                    @id @default(uuid()) @db.Uuid
+  code                 String                    @unique @db.VarChar(32)
+  name                 String                    @db.VarChar(160)
+  slug                 String                    @unique @db.VarChar(180)
+  shortDescription     String?                   @db.VarChar(500)
   description          String?
   bedrooms             Int
   bathrooms            Int?
   maximumGuests        Int?
-  locationDescription  String?            @db.VarChar(160)
-  unitPosition         String?            @db.VarChar(160)
+  locationDescription  String?                   @db.VarChar(160)
+  unitPosition         String?                   @db.VarChar(160)
   baseNightlyRateMinor Int?
-  currency             String             @default("GHS") @db.VarChar(3)
-  status               ApartmentStatus    @default(DRAFT)
+  currency             String                    @default("GHS") @db.VarChar(3)
+  status               ApartmentStatus           @default(DRAFT)
   publishedAt          DateTime?
   archivedAt           DateTime?
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @updatedAt
   amenities            ApartmentAmenity[]
   images               ApartmentImage[]
+  manualBlocks         ManualAvailabilityBlock[]
+  calendarConnections  CalendarConnection[]
+  rateOverrides        NightlyRateOverride[]
+  pricingSettings      ApartmentPricingSettings?
+  weekdayRates         WeekdayRate[]
+  stayDiscounts        LengthOfStayDiscount[]
+  exportToken          CalendarExportToken?
 
   @@index([status, createdAt, id])
   @@index([bedrooms, maximumGuests])
+}
+
+enum BlockReason {
+  MAINTENANCE
+  OWNER_USE
+  CLEANING
+  OTHER
+}
+
+enum CalendarProvider {
+  AIRBNB
+}
+
+enum CalendarSyncStatus {
+  NEVER
+  SUCCESS
+  FAILED
+}
+
+model ManualAvailabilityBlock {
+  id          String      @id @default(uuid()) @db.Uuid
+  apartmentId String      @db.Uuid
+  apartment   Apartment   @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  startDate   DateTime    @db.Date
+  endDate     DateTime    @db.Date
+  reason      BlockReason
+  notes       String?
+  removedAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([apartmentId, startDate, endDate])
+}
+
+model CalendarConnection {
+  id                   String                  @id @default(uuid()) @db.Uuid
+  apartmentId          String                  @db.Uuid
+  apartment            Apartment               @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  provider             CalendarProvider        @default(AIRBNB)
+  url                  String                  @db.VarChar(2048)
+  enabled              Boolean                 @default(true)
+  lastAttemptAt        DateTime?
+  lastSuccessfulSyncAt DateTime?
+  lastErrorAt          DateTime?
+  syncStatus           CalendarSyncStatus      @default(NEVER)
+  errorCode            String?                 @db.VarChar(64)
+  syncLeaseUntil       DateTime?
+  syncLeaseOwner       String?                 @db.Uuid
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  events               ExternalCalendarEvent[]
+
+  @@index([apartmentId, enabled])
+  @@index([enabled, syncLeaseUntil])
+}
+
+model ExternalCalendarEvent {
+  id                   String             @id @default(uuid()) @db.Uuid
+  calendarConnectionId String             @db.Uuid
+  connection           CalendarConnection @relation(fields: [calendarConnectionId], references: [id], onDelete: Cascade)
+  externalUid          String             @db.VarChar(512)
+  startDate            DateTime           @db.Date
+  endDate              DateTime           @db.Date
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@unique([calendarConnectionId, externalUid])
+  @@index([calendarConnectionId, startDate, endDate])
+}
+
+model NightlyRateOverride {
+  id               String    @id @default(uuid()) @db.Uuid
+  apartmentId      String    @db.Uuid
+  apartment        Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  date             DateTime  @db.Date
+  nightlyRateMinor Int
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([apartmentId, date])
+}
+
+model ApartmentPricingSettings {
+  apartmentId         String    @id @db.Uuid
+  apartment           Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  minStayNights       Int       @default(1)
+  maxStayNights       Int?
+  advanceNoticeDays   Int?
+  bookingWindowDays   Int?
+  requireExternalSync Boolean   @default(true)
+  freshnessMinutes    Int       @default(240)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model WeekdayRate {
+  apartmentId      String    @db.Uuid
+  apartment        Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  weekday          Int
+  nightlyRateMinor Int
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@id([apartmentId, weekday])
+}
+
+model LengthOfStayDiscount {
+  apartmentId String    @db.Uuid
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  minNights   Int
+  discountBps Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@id([apartmentId, minNights])
+}
+
+model CalendarExportToken {
+  apartmentId String    @id @db.Uuid
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique @db.VarChar(64)
+  createdAt   DateTime  @default(now())
 }
 
 model Amenity {

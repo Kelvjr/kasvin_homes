@@ -1,1 +1,90 @@
 @import 'tailwindcss';
+
+@theme inline {
+  --color-teal-deep: #002b35;
+  --color-teal-dark: #001d24;
+  --color-teal-mid: #083d4a;
+  --color-teal-soft: #115160;
+  --color-cream: #fdf4dc;
+  --color-cream-light: #fefaf0;
+  --color-cream-sand: #f4e6c3;
+  --color-coral: #ff7f50;
+  --color-coral-dark: #e6683a;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --teal-deep: #002b35;
+  --cream: #fdf4dc;
+  --coral: #ff7f50;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #fefaf0;
+  color: #002b35;
+}
+
+body {
+  font-family:
+    'Plus Jakarta Sans',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: #fefaf0;
+  color: #002b35;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-editorial {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+::selection {
+  background-color: #ff7f50;
+  color: #002b35;
+}
+
+/* Smooth reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Subtle luxury image hover */
+.luxury-image {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .luxury-image {
+  transform: scale(1.05);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fdf4dc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #002b35;
+  border-radius: 9999px;
+}
